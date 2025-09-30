@@ -1,11 +1,8 @@
-#include "boost/multi_index_container.hpp"
-#include "boost/multi_index/ordered_index.hpp"
-#include "boost/multi_index/sequenced_index.hpp"
-#include "boost/multi_index/identity.hpp"
-#include "boost/multi_index/member.hpp"
-#include <chrono>
-#include <type_traits>
+#pragma once
 
+#include <chrono>
+
+namespace {
 using namespace boost::multi_index;
 
 struct lru_time_tag {};
@@ -38,7 +35,7 @@ template<
     typename IndexSpecifierList,
     typename Allocator = std::allocator<TimestampedValue<Value>>
 >
-class LRUCacheContainer {
+class LRUCacheContainer_TimeIndex {
 private:
     using CacheItem = TimestampedValue<Value>;
     
@@ -63,7 +60,7 @@ public:
     using value_type = Value;
     using cache_item_type = CacheItem;
     
-    LRUCacheContainer(size_t max_size) : max_size(max_size) {}
+    LRUCacheContainer_TimeIndex(size_t max_size) : max_size(max_size) {}
     
     template<typename... Args>
     bool emplace(Args&&... args) {
@@ -141,3 +138,4 @@ private:
         }
     }
 };
+}

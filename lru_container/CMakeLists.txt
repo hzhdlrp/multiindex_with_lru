@@ -17,4 +17,4 @@ add_executable(lru_cache_demo
 )
 
 target_include_directories(lru_cache_demo PRIVATE ${Boost_INCLUDE_DIRS})
-target_compile_features(lru_cache_demo PRIVATE cxx_std_14)
+target_compile_features(lru_cache_demo PRIVATE cxx_std_20)
