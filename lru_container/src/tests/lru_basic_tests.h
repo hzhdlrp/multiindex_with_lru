@@ -9,25 +9,25 @@ namespace {
 
 using namespace boost::multi_index;
 
-struct id_tag {};
-struct email_tag {};
-struct name_tag {};
-
-struct User {
-    int id;
-    std::string email;
-    std::string name;
-    
-    bool operator==(const User& other) const {
-        return id == other.id && email == other.email && name == other.name;
-    }
-};
-
-
 template<
     template<typename, typename, typename> class LRUCacheContainer
 >
 void test_lru_users() {
+
+    struct id_tag {};
+    struct email_tag {};
+    struct name_tag {};
+
+    struct User {
+        int id;
+        std::string email;
+        std::string name;
+        
+        bool operator==(const User& other) const {
+            return id == other.id && email == other.email && name == other.name;
+        }
+    };
+
     using UserCache = LRUCacheContainer<
         User,
         indexed_by<
@@ -102,6 +102,8 @@ void test_lru_products() {
         >,
         std::allocator<Product>
     >;
+
+    lru_concept_assert_for_one_tag(ProductCache, sku_tag, std::string, Product);
     
     ProductCache cache(2);
     
@@ -118,7 +120,6 @@ void test_lru_products() {
     assert((cache.template contains<sku_tag, std::string>("A3"))); // new
     assert((!cache.template contains<sku_tag, std::string>("A2"))); // ousted
     
-    // 
     assert((cache.template get<name_tag>().find("Keyboard") != cache.template get<name_tag>().end()));
     assert((cache.template get<name_tag>().find("Mouse") == cache.template get<name_tag>().end()));
     
