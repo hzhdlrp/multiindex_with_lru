@@ -8,7 +8,7 @@ int main() {
     test_lru_products<LRUCacheContainer_TimeIndex>();
     std::cout << "all tests success" << std::endl;
 
-    benchmark::simple_benchmark<LRUCacheContainer_TimeIndex>("output.txt");
-    benchmark::google_benchmark<LRUCacheContainer_TimeIndex>("google_output.txt");
+    benchmark::simple_benchmark<LRUCacheContainer_TimeIndex>("output_time_index.txt");
+    benchmark::google_benchmark<LRUCacheContainer_TimeIndex>("google_output_time_index.txt");
     return 0;
 }

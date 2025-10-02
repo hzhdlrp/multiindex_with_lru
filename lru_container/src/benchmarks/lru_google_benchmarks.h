@@ -104,6 +104,8 @@ void google_benchmark(std::string&& output_filename) {
     args.push_back(prog_name.data());
     std::string out_arg = "--benchmark_out=" + output_filename;
     args.push_back(out_arg.data());
+    std::string format_arg = "--benchmark_out_format=json";
+    args.push_back(format_arg.data());
     int argc = args.size();
     benchmark::Initialize(&argc, args.data());
 

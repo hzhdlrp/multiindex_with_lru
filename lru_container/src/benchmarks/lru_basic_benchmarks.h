@@ -44,17 +44,30 @@ void simple_benchmark(std::string &&output_filename) {
         size_t reading_operations_number = OPERATIONS_NUMBER * 4 / 5;
         size_t writing_operations_number = OPERATIONS_NUMBER / 5;
 
-        auto start_time = std::chrono::high_resolution_clock::now();
+        std::vector<std::string> names, emails;
+        std::vector<int> ids;
+        std::vector<User> users;
         
-
         for (size_t i = 0; i < reading_operations_number; ++i) {
-            cache.template get<name_tag>().find(generator::generate_name());
-            cache.template get<email_tag>().find(generator::generate_email());
-            cache.template get<id_tag>().find(generator::generate_id());
+            names.push_back(generator::generate_name());
+            emails.push_back(generator::generate_email());
+            ids.push_back(generator::generate_id());
         }
 
         for (size_t i = 0; i < writing_operations_number; ++i) {
-            cache.emplace(generator::generate_user());
+            users.push_back(generator::generate_user());
+        }
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+        
+        for (size_t i = 0; i < reading_operations_number; ++i) {
+            cache.template get<name_tag>().find(names[i]);
+            cache.template get<email_tag>().find(emails[i]);
+            cache.template get<id_tag>().find(ids[i]);
+        }
+
+        for (size_t i = 0; i < writing_operations_number; ++i) {
+            cache.emplace(users[i]);
         }
 
         auto end_time = std::chrono::high_resolution_clock::now();
