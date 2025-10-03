@@ -81,10 +81,28 @@ public:
     }
 };
 
+void google_benchmark_init(std::string&& output_filename) {
+    std::vector<char*> args;
+    std::string prog_name = "benchmark";
+    args.push_back(prog_name.data());
+    std::string out_arg = "--benchmark_out=" + output_filename;
+    args.push_back(out_arg.data());
+    std::string format_arg = "--benchmark_out_format=json";
+    args.push_back(format_arg.data());
+    int argc = args.size();
+    benchmark::Initialize(&argc, args.data());
+}
+
+void google_benchmark_run() {
+    benchmark::RunSpecifiedBenchmarks();
+    benchmark::ClearRegisteredBenchmarks();
+    benchmark::Shutdown();
+}
+
 template<
     template<typename, typename, typename> class LRUCacheContainer
 >
-void google_benchmark(std::string&& output_filename) {
+void google_benchmark() {
     using UserCache = LRUCacheContainer<
         User,
         indexed_by<
@@ -99,16 +117,6 @@ void google_benchmark(std::string&& output_filename) {
     lru_concept_assert_for_one_tag(UserCache, email_tag, std::string, User);
     lru_concept_assert_for_one_tag(UserCache, name_tag, std::string, User);
 
-    std::vector<char*> args;
-    std::string prog_name = "benchmark";
-    args.push_back(prog_name.data());
-    std::string out_arg = "--benchmark_out=" + output_filename;
-    args.push_back(out_arg.data());
-    std::string format_arg = "--benchmark_out_format=json";
-    args.push_back(format_arg.data());
-    int argc = args.size();
-    benchmark::Initialize(&argc, args.data());
-
     for (auto size : CACHE_SIZES) {
         benchmark::RegisterBenchmark(
             "GetOperations", 
@@ -122,8 +130,6 @@ void google_benchmark(std::string&& output_filename) {
             &LRUCacheBenchmark<LRUCacheContainer>::BM_EmplaceOperations
         )->Args({size, OPERATIONS_NUMBER})->Unit(benchmark::kMicrosecond);
     }
-
-    benchmark::RunSpecifiedBenchmarks();
 }
 
 } // namespace benchmark

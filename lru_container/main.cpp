@@ -9,14 +9,17 @@ int main() {
     test_lru_products<LRUCacheContainer_TimeIndex>();
     std::cout << "all tests success" << std::endl;
 
-    benchmark::simple_benchmark<LRUCacheContainer_TimeIndex>("output_time_index.txt");
-    benchmark::google_benchmark<LRUCacheContainer_TimeIndex>("google_output_time_index.txt");
-
     test_lru_users<LRUCacheContainer_List>();
     test_lru_products<LRUCacheContainer_List>();
     std::cout << "all tests success" << std::endl;
 
     benchmark::simple_benchmark<LRUCacheContainer_List>("output_time_index.txt");
-    benchmark::google_benchmark<LRUCacheContainer_List>("google_output_time_index.txt");
+    benchmark::simple_benchmark<LRUCacheContainer_TimeIndex>("output_time_index.txt");
+
+    benchmark::google_benchmark<LRUCacheContainer_List>();
+    benchmark::google_benchmark<LRUCacheContainer_TimeIndex>();
+
+    benchmark::google_benchmark_init("google_output_time_index.txt");
+    benchmark::google_benchmark_run();
     return 0;
 }

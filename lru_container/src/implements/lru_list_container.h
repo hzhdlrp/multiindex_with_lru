@@ -6,6 +6,10 @@
 #include <boost/intrusive/unordered_set.hpp>
 #include <boost/intrusive/unordered_set_hook.hpp>
 
+#include <list>
+#include <functional>
+#include <unordered_set>
+
 namespace {
 using namespace boost::multi_index;
 
@@ -43,8 +47,7 @@ template<
 class LRUCacheContainer_List {
 private:
     using CacheItem = ValueWithIdentificator<Value>;
-
-    using List = boost::intrusive::list<size_t, boost::intrusive::constant_time_size<false>>;
+    using List = std::list<size_t>;
     
     using ExtendedIndexSpecifierList = typename boost::mpl::push_back<
         IndexSpecifierList,
@@ -81,7 +84,7 @@ public:
         if (result.second) {
             usage_id_list.insert(usage_id_list.end(), result.first->internal_id);
         } else {
-            usage_id_list.splice(usage_id_list.end(), usage_id_list, usage_id_list.iterator_to(result.first->internal_id));
+            touch(result.first->internal_id);
         }
         return result.second;
     }
@@ -100,7 +103,7 @@ public:
         auto it = primary_index.find(key);
         
         if (it != primary_index.end()) {
-            usage_id_list.splice(usage_id_list.end(), usage_id_list, usage_id_list.iterator_to(it->internal_id));
+            touch(it->internal_id);
         }
         
         return it;
@@ -115,8 +118,12 @@ public:
     bool erase(const Key& key) {
         auto& primary_index = container.template get<Tag>();
         auto it = primary_index.find(key);
-        if (it != primary_index.end())
-            usage_id_list.erase(it->internal_id);
+        if (it != primary_index.end()) {
+            auto list_it = std::find(usage_id_list.begin(), usage_id_list.end(), it->internal_id);
+            if (list_it != usage_id_list.end()) {
+                usage_id_list.erase(list_it);
+            }
+        }
         return container.template get<Tag>().erase(key) > 0;
     }
     
@@ -147,14 +154,22 @@ public:
     
 private:
     void evict_lru() {
-        if (!usage_list.empty()) {
-            size_t id_to_erase = *usage_list.begin();
-            container.temlate get<internal_id_tag>().erase(id_to_erase);
-            usage_list.erase(usage_list.begin());
+        if (!usage_id_list.empty()) {
+            size_t id_to_erase = *usage_id_list.begin();
+            container.template get<internal_id_tag>().erase(id_to_erase);
+            usage_id_list.erase(usage_id_list.begin());
+        }
+    }
+
+    void touch(size_t key) {
+        auto it = std::find(usage_id_list.begin(), usage_id_list.end(), key);
+        if (it != usage_id_list.end()) {
+            usage_id_list.splice(usage_id_list.end(), usage_id_list, it);
         }
     }
 };
 
-size_t ValueWithIdentificator::id = 0;
+template<typename T>
+size_t ValueWithIdentificator<T>::id = 0;
 
 }

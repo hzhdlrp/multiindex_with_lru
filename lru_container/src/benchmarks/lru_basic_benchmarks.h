@@ -23,7 +23,7 @@ void simple_benchmark(std::string &&output_filename) {
     lru_concept_assert_for_one_tag(UserCache, email_tag, std::string, User);
     lru_concept_assert_for_one_tag(UserCache, name_tag, std::string, User);
 
-    std::ofstream output_file(output_filename);
+    std::ofstream output_file(output_filename, std::ios::app);
     if (!output_file.is_open()) {
         std::cerr << "Failed to open output file: " << output_filename << std::endl;
         return;
