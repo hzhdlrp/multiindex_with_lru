@@ -46,9 +46,9 @@ public:
             state.ResumeTiming();
 
             for (size_t i = 0; i < operations_count; ++i) {
-                benchmark::DoNotOptimize(cache.template get<name_tag>().find(names[i]));
-                benchmark::DoNotOptimize(cache.template get<email_tag>().find(emails[i]));
-                benchmark::DoNotOptimize(cache.template get<id_tag>().find(ids[i]));
+                benchmark::DoNotOptimize(cache.template find<name_tag, std::string>(names[i]));
+                benchmark::DoNotOptimize(cache.template find<email_tag, std::string>(emails[i]));
+                benchmark::DoNotOptimize(cache.template find<id_tag, int>(ids[i]));
             }
         }
 

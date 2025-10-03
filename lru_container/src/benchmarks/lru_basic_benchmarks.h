@@ -61,9 +61,9 @@ void simple_benchmark(std::string &&output_filename) {
         auto start_time = std::chrono::high_resolution_clock::now();
         
         for (size_t i = 0; i < reading_operations_number; ++i) {
-            cache.template get<name_tag>().find(names[i]);
-            cache.template get<email_tag>().find(emails[i]);
-            cache.template get<id_tag>().find(ids[i]);
+            cache.template find<name_tag, std::string>(names[i]);
+            cache.template find<email_tag, std::string>(emails[i]);
+            cache.template find<id_tag, int>(ids[i]);
         }
 
         for (size_t i = 0; i < writing_operations_number; ++i) {
